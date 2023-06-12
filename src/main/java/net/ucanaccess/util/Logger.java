@@ -15,6 +15,8 @@ limitations under the License.
 */
 package net.ucanaccess.util;
 
+import org.slf4j.LoggerFactory;
+
 import java.io.PrintWriter;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -37,6 +39,7 @@ public final class Logger {
         NO_SELECT
     }
 
+    private static final org.slf4j.Logger internalLog = LoggerFactory.getLogger(Logger.class);
     private static PrintWriter    logPrintWriter;
     private static ResourceBundle messageBundle = ResourceBundle.getBundle("net.ucanaccess.util.logger_messages");
 
@@ -44,10 +47,11 @@ public final class Logger {
     }
 
     public static void dump() {
+        StringBuilder builder = new StringBuilder();
         for (StackTraceElement el : Thread.currentThread().getStackTrace()) {
-            logPrintWriter.println(el.toString());
-            logPrintWriter.flush();
+            builder.append(el.toString() + "\n");
         }
+        internalLog.debug(builder.toString());
     }
 
     public static void turnOffJackcessLog() {
@@ -68,10 +72,7 @@ public final class Logger {
     }
 
     public static void log(Object obj) {
-        if (logPrintWriter != null) {
-            logPrintWriter.println(obj);
-            logPrintWriter.flush();
-        }
+        internalLog.info(obj.toString());
     }
 
     public static void logMessage(Messages cod) {
@@ -83,7 +84,7 @@ public final class Logger {
     }
 
     public static void logWarning(String warning) {
-        System.err.println("WARNING:" + warning);
+        internalLog.warn(warning);
     }
 
     public static void logWarning(Messages cod) {
